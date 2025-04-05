@@ -69,7 +69,7 @@ def get_appointments():
 # --- Interfaz Streamlit ---
 st.title("FastMed - Sistema de Citas (Versión sin fallos)")
 
-menu = ["Inicio", "Registro", "Login", "Reservar Cita", "Ver Citas"]
+menu = ["Inicio", "Registro", "Login", "Reservar Cita", "Ver Citas", "Cerrar Sesión"]
 choice = st.sidebar.selectbox("Menú", menu)
 
 if choice == "Registro":
@@ -116,6 +116,13 @@ elif choice == "Ver Citas":
     citas = get_appointments()
     for cita in citas:
         st.write(f"ID: {cita[0]} | Usuario ID: {cita[1]} | Dr: {cita[2]} | Fecha: {cita[3]} | Hora: {cita[4]} | Estado: {cita[5]}")
+      
+elif choice == "Cerrar Sesión":
+    if 'user' in st.session_state:
+        del st.session_state['user']
+        st.success("Sesión cerrada correctamente")
+    else:
+        st.warning("No hay ninguna sesión iniciada")
 
 else:
     st.write("Selecciona una opción en el menú de la izquierda.")
