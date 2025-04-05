@@ -96,7 +96,7 @@ elif choice == "Login":
         else:
             st.error("Usuario no encontrado")
 
-elif choice == "Reservar Cita":
+if choice == "Reservar Cita":
     if 'user' not in st.session_state:
         st.warning("Debes iniciar sesión")
     else:
@@ -105,8 +105,11 @@ elif choice == "Reservar Cita":
         date = st.date_input("Fecha", min_value=datetime.date.today())
         time = st.selectbox("Hora", ["09:00", "10:00", "11:00"])
         if st.button("Reservar"):
-            create_appointment(st.session_state['user'][0], doctor, str(date), time)
-            st.success("Cita reservada")
+            try:
+                create_appointment(st.session_state['user'][0], doctor, str(date), time)
+                st.success("Cita reservada")
+            except ValueError as e:
+                st.error(str(e))
 
 elif choice == "Ver Citas":
     st.subheader("Listado de Citas")
