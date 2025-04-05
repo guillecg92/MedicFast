@@ -23,20 +23,26 @@ conn.commit()
 
 # --- Funciones con fallas intencionales ---
 def register_user(username, password, role):
-    # No valida si el usuario ya existe (fallo)
+    # Validación de usuario existente
+    c.execute("SELECT * FROM users WHERE username = ?", (username,))
+    if c.fetchone():
+        raise ValueError("El nombre de usuario ya existe")
     c.execute("INSERT INTO users (username, password, role) VALUES (?, ?, ?)", (username, password, role))
     conn.commit()
 
 
 def login_user(username, password):
-    # No valida contraseña correctamente (fallo)
-    c.execute("SELECT * FROM users WHERE username = ?", (username,))
+    # Validación de contraseña
+    c.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
     return c.fetchone()
 
 
 def create_appointment(user_id, doctor, date, time):
-    # Permite doble reserva en mismo horario (fallo)
-    c.execute("INSERT INTO appointments (user_id, doctor, date, time, status) VALUES (?, ?, ?, ?, ?)",
+    # Validación de doble reserva
+    c.execute("SELECT * FROM appointments WHERE doctor = ? AND date = ? AND time = ?", (doctor, date, time))
+    if c.fetchone():
+        raise ValueError("Ya existe una cita para el mismo doctor en el mismo horario")
+    c.execute("INSERT INTO appointments (user_id, doctor, date, time, status) VALUES (?, ?, ?, ?, ?)", 
               (user_id, doctor, date, time, "reservada"))
     conn.commit()
 
