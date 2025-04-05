@@ -27,9 +27,15 @@ def register_user(username, password, role):
     if not username or not password or not role:
         raise ValueError("Todos los campos son obligatorios")
     
-    # Validación de caracteres especiales
+    # Validación de caracteres especiales en el nombre de usuario
     if not re.match("^[a-zA-Z0-9_]+$", username):
         raise ValueError("El nombre de usuario no debe contener caracteres especiales")
+    
+    # Validación de formato de contraseña
+    if not re.search("[A-Z]", password):
+        raise ValueError("La contraseña debe contener al menos una letra mayúscula")
+    if not re.search("[^a-zA-Z0-9]", password):
+        raise ValueError("La contraseña debe contener al menos un carácter especial")
     
     # Validación de usuario existente
     c.execute("SELECT * FROM users WHERE username = ?", (username,))
