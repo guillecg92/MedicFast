@@ -1,6 +1,7 @@
 import streamlit as st
 import sqlite3
 import datetime
+import re
 
 # --- Configuración de la base de datos ---
 conn = sqlite3.connect('fastmed.db', check_same_thread=False)
@@ -21,12 +22,20 @@ c.execute('''CREATE TABLE IF NOT EXISTS appointments (
                 status TEXT)''')
 conn.commit()
 
-# --- Funciones con fallas intencionales ---
 def register_user(username, password, role):
+    # Validación de campos vacíos
+    if not username or not password or not role:
+        raise ValueError("Todos los campos son obligatorios")
+    
+    # Validación de caracteres especiales
+    if not re.match("^[a-zA-Z0-9_]+$", username):
+        raise ValueError("El nombre de usuario no debe contener caracteres especiales")
+    
     # Validación de usuario existente
     c.execute("SELECT * FROM users WHERE username = ?", (username,))
     if c.fetchone():
         raise ValueError("El nombre de usuario ya existe")
+    
     c.execute("INSERT INTO users (username, password, role) VALUES (?, ?, ?)", (username, password, role))
     conn.commit()
 
@@ -52,7 +61,7 @@ def get_appointments():
     return c.fetchall()
 
 # --- Interfaz Streamlit ---
-st.title("FastMed - Sistema de Citas (Versión con fallos)")
+st.title("FastMed - Sistema de Citas (Versión sin fallos)")
 
 menu = ["Inicio", "Registro", "Login", "Reservar Cita", "Ver Citas"]
 choice = st.sidebar.selectbox("Menú", menu)
@@ -63,8 +72,11 @@ if choice == "Registro":
     password = st.text_input("Contraseña", type='password')
     role = st.selectbox("Rol", ["paciente", "medico"])
     if st.button("Registrar"):
-        register_user(username, password, role)
-        st.success("Usuario registrado correctamente")
+        try:
+            register_user(username, password, role)
+            st.success("Usuario registrado correctamente")
+        except ValueError as e:
+            st.error(str(e))
 
 elif choice == "Login":
     st.subheader("Inicio de Sesión")
