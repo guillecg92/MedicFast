@@ -112,6 +112,9 @@ if choice == "Reservar Cita":
                 st.error(str(e))
 
 elif choice == "Ver Citas":
+    if 'user' not in st.session_state:
+        st.warning("Debes iniciar sesión")
+    else:
     st.subheader("Listado de Citas")
     citas = get_appointments()
     for cita in citas:
