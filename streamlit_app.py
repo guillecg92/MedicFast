@@ -115,10 +115,10 @@ elif choice == "Ver Citas":
     if 'user' not in st.session_state:
         st.warning("Debes iniciar sesión")
     else:
-    st.subheader("Listado de Citas")
-    citas = get_appointments()
-    for cita in citas:
-        st.write(f"ID: {cita[0]} | Usuario ID: {cita[1]} | Dr: {cita[2]} | Fecha: {cita[3]} | Hora: {cita[4]} | Estado: {cita[5]}")
+        st.subheader("Listado de Citas")
+        citas = get_appointments()
+        for cita in citas:
+            st.write(f"ID: {cita[0]} | Usuario ID: {cita[1]} | Dr: {cita[2]} | Fecha: {cita[3]} | Hora: {cita[4]} | Estado: {cita[5]}")
       
 elif choice == "Cerrar Sesión":
     if 'user' in st.session_state:
