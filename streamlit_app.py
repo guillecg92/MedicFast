@@ -53,10 +53,32 @@ def login_user(username, password):
 
 
 def create_appointment(user_id, doctor, date, time):
+    # Validación de campos vacíos
+    if not user_id or not doctor or not date or not time:
+        raise ValueError("Todos los campos son obligatorios")
+
+    # Validación de formato de fecha y hora
+    try:
+        datetime.datetime.strptime(date, '%Y-%m-%d')
+    except ValueError:
+        raise ValueError("Formato de fecha inválido")
+
+    if not re.match("^[0-9]{2}:[0-9]{2}$", time):
+        raise ValueError("Formato de hora inválido")
+
+    # Validación de formato de nombre de doctor
+    if not re.match("^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$", doctor):
+        raise ValueError("El nombre del doctor no debe contener caracteres especiales")
+
+    # Validación de día domingo
+    if datetime.datetime.strptime(date, '%Y-%m-%d').weekday() == 6:
+        raise ValueError("No se pueden reservar citas en domingo")
+
     # Validación de doble reserva
     c.execute("SELECT * FROM appointments WHERE doctor = ? AND date = ? AND time = ?", (doctor, date, time))
     if c.fetchone():
         raise ValueError("Ya existe una cita para el mismo doctor en el mismo horario")
+
     c.execute("INSERT INTO appointments (user_id, doctor, date, time, status) VALUES (?, ?, ?, ?, ?)", 
               (user_id, doctor, date, time, "reservada"))
     conn.commit()
