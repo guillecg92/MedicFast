@@ -66,10 +66,6 @@ def create_appointment(user_id, doctor, date, time):
     if not re.match("^[0-9]{2}:[0-9]{2}$", time):
         raise ValueError("Formato de hora inválido")
 
-    # Validación de formato de nombre de doctor
-    if not re.match("^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$", doctor):
-        raise ValueError("El nombre del doctor no debe contener caracteres especiales")
-
     # Validación de día domingo
     if datetime.datetime.strptime(date, '%Y-%m-%d').weekday() == 6:
         raise ValueError("No se pueden reservar citas en domingo")
